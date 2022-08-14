@@ -1,0 +1,92 @@
+#################################
+##-- Data Imputation Project --##
+#################################
+
+~ Comparison of GAIN, MisGAN and KNN ~
+Step by step notes
+
+Using Python 3.8.5
+Numpy      => np.__version__ = 1.19.2
+Pandas.    => pd.__version__ = 1.1.3
+Tensorflow => tf.__version__ = 2.4.1
+Sklearn    => sklearn.__version__ = 0.23.2
+
+
+* pipeline1:
+  ----------
+On mydata1 (univariate Gaussian), MCAR missing_rate=20%
+Trying GAIN and MisGAN, from 1000 to 20000 epochs.
+Trying KNN uniform and distance from 2 to 300 neighbours.
+
+* pipeline2:
+  ----------
+Same thing with mydata2 (Mixture of 3 Gaussians)
+I use this in the paper for justification
+Conclusion -> GAIN: 20000 epochs, MisGAN: 5000 epochs, KNNs: 50 neighbours
+
+* pipeline3:
+  ----------
+Extra analysis for GAIN on mydata2 (mixture of 3 Gaussians).
+Train from 10000 to 100000 epochs (to see if overfitting happens).
+Conclusion -> 20000 epochs for GAIN seems good!
+
+* pipeline4:
+  ----------
+On mydata2 (Mixture of 3 Gaussians)
+Try missing_rate from 10% to 80% (in MCAR)
+Conclusion -> poor MisGAN...
+
+* pipeline5:
+  ----------
+MCAR missing_rate=20% on the 7 true datasets
+Conclusion -> Dataset "news" is really bad (because of outliers)
+           -> GAIN much better than MisGAN
+           -> KNN still better than GAIN
+
+* pipeline6:
+  ----------
+Using mydata1 (mutivar. Gaussian) and mydata2 (Mixture of 3 Gaussians)
+MCAR with changing missing_rates per variables (10%, 10%, 40%, 60%, 80%)
+Conclusion -> MisGAN poor, GAIN good
+           -> KNN still slightly better than GAIN
+
+* pipeline7:
+  ----------
+Using mydata1 (multivar. Gaussian) and mydata2 (mixture of 3 Gaussians)
+MAR based on the first column!
+Conclusion -> MisGAN bad... GAIN is better than KNN??
+           -> Yes, I did it two times and this is consistent!
+
+* pipeline8:
+  ----------
+MAR with every dataset (one variable is selected for MAR probs, using quantiles)
+Average missing_rate is 20%, evenly scaled between 0 and 40%
+Conclusion -> Dataset "news" is bad due to outliers
+           -> MisGAN extremely poor
+           -> KNN seems to perform better
+
+* pipeline9:
+  ----------
+MAR using quantiles on the same variable as above
+Average missing_rate is 45% (evenly scaled between 0 and 90%)
+Conclusion -> Dataset "news" definitely shity
+           -> MisGAN still poor
+           -> KNN still better
+
+* pipeline10:
+  -----------
+MNAR using quantiles for each variable
+Average missing_rate of 20% (evenly scaled between 0 and 40%)
+Conclusion -> News is bad dataset
+           -> MisGAN poor
+           -> KNN and GAIN are comparable
+
+* pipeline11:
+  -----------
+MNAR using quantiles for each variable
+Average missing_rate of 45% (evenly scaled between 0 and 90%)
+Conclusion -> News is bad, but so is spam dataset now!! :o
+           -> MisGAN poor
+           -> Now GAIN does better
+
+
